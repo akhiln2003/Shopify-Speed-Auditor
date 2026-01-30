@@ -23,6 +23,33 @@ export const fetchContent = async () => {
 }
 
 /**
+ * Update landing page content
+ * @param {Object} payload - Content fields to update
+ */
+export const updateContent = async (payload) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/content`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}))
+      throw new Error(errorData.message || 'Failed to update content')
+    }
+
+    const result = await response.json()
+    return result.data || result
+  } catch (error) {
+    console.error('Error updating content:', error)
+    throw error
+  }
+}
+
+/**
  * Submit store URL for audit
  * @param {string} storeUrl - Shopify store URL
  * @returns {Promise<Object>} Audit report

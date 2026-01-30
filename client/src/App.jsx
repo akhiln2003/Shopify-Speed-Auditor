@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
 import Home from './pages/Home'
+import NotFound from './pages/NotFound'
+import AdminContent from './pages/AdminContent'
 
 /**
  * Main App component
@@ -15,6 +17,8 @@ function App() {
         <main className="flex-1">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/admin" element={<AdminContent />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
         <Footer />
