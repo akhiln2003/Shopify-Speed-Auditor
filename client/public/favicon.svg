@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0369a1;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Background circle -->
+  <rect width="64" height="64" rx="12" fill="url(#gradient)"/>
+  <!-- Letter S -->
+  <text x="32" y="45" font-family="Arial, sans-serif" font-size="40" font-weight="bold" fill="white" text-anchor="middle">S</text>
+  <!-- Speed indicator lines -->
+  <circle cx="32" cy="32" r="28" fill="none" stroke="white" stroke-width="2" opacity="0.3"/>
+  <path d="M 32 4 L 32 12 M 32 52 L 32 60 M 4 32 L 12 32 M 52 32 L 60 32" stroke="white" stroke-width="2" opacity="0.5"/>
+</svg>
+

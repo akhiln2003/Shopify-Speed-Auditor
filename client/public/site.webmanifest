@@ -1,0 +1,22 @@
+{
+  "name": "Shopify Store Speed Auditor",
+  "short_name": "Speed Auditor",
+  "description": "Speed Up Your Shopify Store. Get comprehensive speed audits and actionable recommendations.",
+  "icons": [
+    {
+      "src": "/favicon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#0ea5e9",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/"
+}
+
