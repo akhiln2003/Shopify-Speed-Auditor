@@ -212,6 +212,34 @@ export const addPricingPlan = async (plan) => {
 }
 
 /**
+ * Update a feature by index
+ * @param {number} index - Index of feature to update
+ * @param {Object} feature - Updated feature object with icon, title, description
+ */
+export const updateFeatureByIndex = async (index, feature) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/content/feature/${index}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(feature),
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}))
+      throw new Error(errorData.message || 'Failed to update feature')
+    }
+
+    const result = await response.json()
+    return result.data || result
+  } catch (error) {
+    console.error('Error updating feature:', error)
+    throw error
+  }
+}
+
+/**
  * Delete a feature by index
  * @param {number} index - Index of feature to delete
  */
@@ -230,6 +258,34 @@ export const deleteFeatureByIndex = async (index) => {
     return result.data || result
   } catch (error) {
     console.error('Error deleting feature:', error)
+    throw error
+  }
+}
+
+/**
+ * Update a pricing plan by index
+ * @param {number} index - Index of pricing plan to update
+ * @param {Object} plan - Updated pricing plan object with name, price, features, popular
+ */
+export const updatePricingByIndex = async (index, plan) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/content/pricing/${index}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(plan),
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}))
+      throw new Error(errorData.message || 'Failed to update pricing plan')
+    }
+
+    const result = await response.json()
+    return result.data || result
+  } catch (error) {
+    console.error('Error updating pricing plan:', error)
     throw error
   }
 }

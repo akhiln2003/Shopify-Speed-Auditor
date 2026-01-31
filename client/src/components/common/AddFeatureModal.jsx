@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import Button from './Button'
 
 /**
@@ -10,6 +10,18 @@ const AddFeatureModal = ({ isOpen, onSave, onCancel, initialFeature = null }) =>
   )
   const [errors, setErrors] = useState({})
   const [isSaving, setIsSaving] = useState(false)
+
+  // Update form data when initialFeature changes
+  useEffect(() => {
+    if (isOpen) {
+      if (initialFeature) {
+        setFormData(initialFeature)
+      } else {
+        setFormData({ icon: '', title: '', description: '' })
+      }
+      setErrors({})
+    }
+  }, [isOpen, initialFeature])
 
   const validateForm = useCallback(() => {
     const newErrors = {}
@@ -69,13 +81,18 @@ const AddFeatureModal = ({ isOpen, onSave, onCancel, initialFeature = null }) =>
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-lg p-6 max-w-md mx-4 max-h-[90vh] overflow-y-auto">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          {initialFeature ? 'Edit Feature' : 'Add Feature'}
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto scrollbar-hide p-6 md:p-8" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+        <style>{`
+          .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+          }
+        `}</style>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">
+          {initialFeature ? 'Edit Feature' : 'Add New Feature'}
         </h2>
 
-        <div className="space-y-4">
+        <div className="space-y-5">
           {/* Icon Field */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -156,10 +173,10 @@ const AddFeatureModal = ({ isOpen, onSave, onCancel, initialFeature = null }) =>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-3 justify-end mt-6">
+        <div className="flex gap-3 justify-end mt-8 pt-6 border-t border-gray-200">
           <Button
             variant="outline"
-            size="sm"
+            size="md"
             onClick={handleCancel}
             disabled={isSaving}
           >
@@ -167,7 +184,7 @@ const AddFeatureModal = ({ isOpen, onSave, onCancel, initialFeature = null }) =>
           </Button>
           <Button
             variant="primary"
-            size="sm"
+            size="md"
             onClick={handleSubmit}
             disabled={isSaving}
           >

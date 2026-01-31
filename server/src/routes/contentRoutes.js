@@ -1,5 +1,5 @@
 import express from 'express'
-import { getContent, updateContent, addFeature, addPricingPlan, deleteFeature, deletePricingPlan } from '../controllers/contentController.js'
+import { getContent, updateContent, addFeature, addPricingPlan, deleteFeature, deletePricingPlan, updateFeature, updatePricingPlan } from '../controllers/contentController.js'
 
 const router = express.Router()
 
@@ -17,6 +17,7 @@ router.route('/feature')
   .post(addFeature)
 
 router.route('/feature/:index')
+  .put(updateFeature)
   .delete(deleteFeature)
 
 /**
@@ -26,6 +27,7 @@ router.route('/pricing')
   .post(addPricingPlan)
 
 router.route('/pricing/:index')
+  .put(updatePricingPlan)
   .delete(deletePricingPlan)
 
 export default router

@@ -208,6 +208,52 @@ export const addPricingPlan = async (req, res, next) => {
 }
 
 /**
+ * Update a feature by index
+ * PUT /api/content/feature/:index
+ */
+export const updateFeature = async (req, res, next) => {
+  try {
+    const { index } = req.params
+    const { icon, title, description } = req.body
+    const idx = parseInt(index, 10)
+
+    if (isNaN(idx)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid feature index'
+      })
+    }
+
+    // Validation
+    if (!icon || !title || !description) {
+      return res.status(400).json({
+        success: false,
+        message: 'Icon, title, and description are required'
+      })
+    }
+
+    let content = await Content.findOne()
+    
+    if (!content || !content.features || content.features.length <= idx) {
+      return res.status(404).json({
+        success: false,
+        message: 'Feature not found'
+      })
+    }
+
+    content.features[idx] = { icon, title, description }
+    await content.save()
+
+    res.status(200).json({
+      success: true,
+      data: content
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+/**
  * Delete a feature by index
  * DELETE /api/content/feature/:index
  */
@@ -233,6 +279,59 @@ export const deleteFeature = async (req, res, next) => {
     }
 
     content.features.splice(idx, 1)
+    await content.save()
+
+    res.status(200).json({
+      success: true,
+      data: content
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+/**
+ * Update a pricing plan by index
+ * PUT /api/content/pricing/:index
+ */
+export const updatePricingPlan = async (req, res, next) => {
+  try {
+    const { index } = req.params
+    const { name, price, features, popular } = req.body
+    const idx = parseInt(index, 10)
+
+    if (isNaN(idx)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid pricing index'
+      })
+    }
+
+    // Validation
+    if (!name || price === undefined || !features || !Array.isArray(features)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Name, price, and features are required'
+      })
+    }
+
+    if (features.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'At least one feature is required'
+      })
+    }
+
+    let content = await Content.findOne()
+    
+    if (!content || !content.pricing || content.pricing.length <= idx) {
+      return res.status(404).json({
+        success: false,
+        message: 'Pricing plan not found'
+      })
+    }
+
+    content.pricing[idx] = { name, price, features, popular: popular || false }
     await content.save()
 
     res.status(200).json({
