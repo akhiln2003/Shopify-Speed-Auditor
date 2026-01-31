@@ -177,3 +177,67 @@ export const getAudit = async (req, res, next) => {
   }
 }
 
+/**
+ * List audits (most recent first)
+ * GET /api/audit
+ */
+export const listAudits = async (req, res, next) => {
+  try {
+    const audits = await Audit.find().sort({ createdAt: -1 }).limit(100)
+    res.status(200).json({ success: true, data: audits })
+  } catch (error) {
+    next(error)
+  }
+}
+
+/**
+ * Update an audit
+ * PUT /api/audit/:id
+ */
+export const updateAudit = async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const updates = req.body
+
+    const audit = await Audit.findById(id)
+    if (!audit) {
+      return res.status(404).json({ success: false, message: 'Audit not found' })
+    }
+
+    // Allow updating a small set of fields
+    if (updates.storeUrl !== undefined) audit.storeUrl = updates.storeUrl
+    if (updates.speedScore !== undefined) audit.speedScore = updates.speedScore
+    if (updates.issues !== undefined) audit.issues = updates.issues
+    if (updates.suggestions !== undefined) audit.suggestions = updates.suggestions
+
+    await audit.save()
+
+    res.status(200).json({ success: true, data: audit })
+  } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({ success: false, message: 'Invalid audit ID format' })
+    }
+    next(error)
+  }
+}
+
+/**
+ * Delete an audit
+ * DELETE /api/audit/:id
+ */
+export const deleteAudit = async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const audit = await Audit.findByIdAndDelete(id)
+    if (!audit) {
+      return res.status(404).json({ success: false, message: 'Audit not found' })
+    }
+    res.status(200).json({ success: true, data: audit })
+  } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({ success: false, message: 'Invalid audit ID format' })
+    }
+    next(error)
+  }
+}
+

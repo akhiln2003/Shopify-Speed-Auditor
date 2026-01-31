@@ -1,15 +1,36 @@
-import React, { useState, useCallback, useMemo } from 'react'
+import React, { useState, useCallback, useEffect, useMemo } from 'react'
 import Button from '../components/common/Button'
 import Card from '../components/common/Card'
 import AuditForm from '../components/audit/AuditForm'
 import SpeedReport from '../components/audit/SpeedReport'
+import { fetchContent } from '../services/api'
 
 /**
  * Home page component with all sections
- * Optimized with useMemo for static data
+ * Fetches features and pricing from database
  */
 const Home = () => {
   const [auditReport, setAuditReport] = useState(null)
+  const [features, setFeatures] = useState([])
+  const [pricing, setPricing] = useState([])
+  const [loadingContent, setLoadingContent] = useState(true)
+  
+  // Load content from database on mount
+  useEffect(() => {
+    const loadContent = async () => {
+      try {
+        const data = await fetchContent()
+        setFeatures(Array.isArray(data.features) ? data.features : [])
+        setPricing(Array.isArray(data.pricing) ? data.pricing : [])
+      } catch (err) {
+        console.error('Failed to load content:', err)
+      } finally {
+        setLoadingContent(false)
+      }
+    }
+
+    loadContent()
+  }, [])
   
   const handleAuditComplete = useCallback((report) => {
     setAuditReport(report)
@@ -48,6 +69,7 @@ const Home = () => {
     }
   }, [])
   
+  
   // Memoize static data to prevent recreation on each render
   const howItWorksSteps = useMemo(() => [
     {
@@ -64,39 +86,6 @@ const Home = () => {
       step: '03',
       title: 'Get Report & Recommendations',
       description: 'Receive a detailed report with your speed score, detected issues, and actionable improvement suggestions.'
-    }
-  ], [])
-  
-  const features = useMemo(() => [
-    {
-      icon: '⚡',
-      title: 'Speed Score (0-100)',
-      description: 'Get a comprehensive speed score that reflects your store\'s overall performance and user experience.'
-    },
-    {
-      icon: '📱',
-      title: 'Heavy Apps Detection',
-      description: 'Identify apps that are slowing down your store and impacting page load times.'
-    },
-    {
-      icon: '🖼️',
-      title: 'Image Optimization Check',
-      description: 'Discover unoptimized images that are affecting your store\'s performance and loading speed.'
-    },
-    {
-      icon: '📊',
-      title: 'Mobile Performance Insights',
-      description: 'Understand how your store performs on mobile devices, where most customers shop.'
-    },
-    {
-      icon: '🔧',
-      title: 'Simple Fix Suggestions',
-      description: 'Receive actionable recommendations that you can implement to improve your store\'s speed.'
-    },
-    {
-      icon: '📈',
-      title: 'Conversion Impact Analysis',
-      description: 'Learn how performance improvements can directly impact your conversion rates and sales.'
     }
   ], [])
   
@@ -181,17 +170,27 @@ const Home = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {features.map((feature, index) => (
-              <Card key={index} className="p-6 md:p-8 lg:p-10" hover>
-                <div className="text-5xl mb-5 transform transition-transform duration-300 hover:scale-110 inline-block">
-                  {feature.icon}
-                </div>
-                <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3">{feature.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{feature.description}</p>
-              </Card>
-            ))}
-          </div>
+          {loadingContent ? (
+            <div className="text-center py-12">
+              <p className="text-gray-600">Loading features…</p>
+            </div>
+          ) : features.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-600">No features available</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+              {features.map((feature, index) => (
+                <Card key={index} className="p-6 md:p-8 lg:p-10" hover>
+                  <div className="text-5xl mb-5 transform transition-transform duration-300 hover:scale-110 inline-block">
+                    {feature.icon}
+                  </div>
+                  <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3">{feature.title}</h3>
+                  <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </section>
       
@@ -223,74 +222,54 @@ const Home = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Free Plan */}
-            <Card className="p-8 md:p-10 border-2 border-gray-200 transition-all duration-300 hover:border-gray-300">
-              <div className="text-center mb-8">
-                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Free Plan</h3>
-                <div className="text-5xl font-extrabold text-gray-900 mb-2">$0</div>
-                <p className="text-gray-600 text-lg">per month</p>
-              </div>
-              <ul className="space-y-4 mb-10">
-                <li className="flex items-start">
-                  <span className="text-green-500 text-xl mr-3 mt-0.5">✓</span>
-                  <span className="text-gray-600 leading-relaxed">1 speed audit per month</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-500 text-xl mr-3 mt-0.5">✓</span>
-                  <span className="text-gray-600 leading-relaxed">Basic speed score</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-500 text-xl mr-3 mt-0.5">✓</span>
-                  <span className="text-gray-600 leading-relaxed">Top 5 issues detected</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-500 text-xl mr-3 mt-0.5">✓</span>
-                  <span className="text-gray-600 leading-relaxed">Email support</span>
-                </li>
-              </ul>
-              <Button variant="outline" className="w-full" size="lg">
-                Get Started
-              </Button>
-            </Card>
-            
-            {/* Pro Plan */}
-            <Card className="p-8 md:p-10 border-2 border-primary-500 relative transition-all duration-300 hover:border-primary-600 hover:shadow-xl">
-              <div className="absolute top-0 right-0 bg-gradient-to-r from-primary-500 to-primary-600 text-white px-5 py-2 rounded-bl-lg text-sm font-semibold shadow-md">
-                Popular
-              </div>
-              <div className="text-center mb-8">
-                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Pro Plan</h3>
-                <div className="text-5xl font-extrabold text-gray-900 mb-2">$29</div>
-                <p className="text-gray-600 text-lg">per month</p>
-              </div>
-              <ul className="space-y-4 mb-10">
-                <li className="flex items-start">
-                  <span className="text-green-500 text-xl mr-3 mt-0.5">✓</span>
-                  <span className="text-gray-600 leading-relaxed">Unlimited speed audits</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-500 text-xl mr-3 mt-0.5">✓</span>
-                  <span className="text-gray-600 leading-relaxed">Comprehensive speed analysis</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-500 text-xl mr-3 mt-0.5">✓</span>
-                  <span className="text-gray-600 leading-relaxed">All issues detected</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-500 text-xl mr-3 mt-0.5">✓</span>
-                  <span className="text-gray-600 leading-relaxed">Priority support</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-500 text-xl mr-3 mt-0.5">✓</span>
-                  <span className="text-gray-600 leading-relaxed">Historical tracking</span>
-                </li>
-              </ul>
-              <Button className="w-full" size="lg">
-                Upgrade to Pro
-              </Button>
-            </Card>
-          </div>
+          {loadingContent ? (
+            <div className="text-center py-12">
+              <p className="text-gray-600">Loading pricing plans…</p>
+            </div>
+          ) : pricing.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-600">No pricing plans available</p>
+            </div>
+          ) : (
+            <div className={`grid gap-8 ${pricing.length === 1 ? 'max-w-md' : 'md:grid-cols-2'} max-w-4xl mx-auto`} style={{ gridTemplateColumns: pricing.length === 1 ? '1fr' : undefined }}>
+              {pricing.map((plan, index) => (
+                <Card 
+                  key={index}
+                  className={`p-8 md:p-10 transition-all duration-300 ${
+                    plan.popular 
+                      ? 'border-2 border-primary-500 relative hover:border-primary-600 hover:shadow-xl' 
+                      : 'border-2 border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  {plan.popular && (
+                    <div className="absolute top-0 right-0 bg-gradient-to-r from-primary-500 to-primary-600 text-white px-5 py-2 rounded-bl-lg text-sm font-semibold shadow-md">
+                      Popular
+                    </div>
+                  )}
+                  <div className="text-center mb-8">
+                    <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">{plan.name}</h3>
+                    <div className="text-5xl font-extrabold text-gray-900 mb-2">${plan.price}</div>
+                    <p className="text-gray-600 text-lg">per month</p>
+                  </div>
+                  <ul className="space-y-4 mb-10">
+                    {(plan.features || []).map((feature, idx) => (
+                      <li key={idx} className="flex items-start">
+                        <span className="text-green-500 text-xl mr-3 mt-0.5">✓</span>
+                        <span className="text-gray-600 leading-relaxed">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <Button 
+                    variant={plan.popular ? 'primary' : 'outline'} 
+                    className="w-full" 
+                    size="lg"
+                  >
+                    {plan.price === 0 ? 'Get Started' : 'Upgrade to ' + plan.name}
+                  </Button>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </div>
